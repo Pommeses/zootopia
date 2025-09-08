@@ -8,21 +8,29 @@ def load_data(file_path):
 
 data = load_data('animals_data.json')
 
-def print_animals(data):
-    """Iterates through animals and prints selected fields"""
+
+def build_animals_string(data):
+    """Builds an HTML string with animal info"""
     output = ""
     for animal in data:
-        # append information to each string
-        output += '<li class="cards__item">'
-        if "name" in animal:
-            output += f"Name: {animal['name']}<br/>\n"
-        if "characteristics" in animal and "diet" in animal["characteristics"]:
-            output += f"Diet: {animal['characteristics']['diet']}<br/>\n"
-        if "locations" in animal and animal["locations"]:
-            output += f"Location: {animal['locations'][0]}<br/>\n"
-        if "characteristics" in animal and "type" in animal["characteristics"]:
-            output += f"Type: {animal['characteristics']['type']}<br/>\n"
-        output += "</li>"
+        name = animal.get("name", "")
+        diet = animal.get("characteristics", {}).get("diet")
+        location = animal.get("locations", [])
+        location_str = location[0] if location else None
+        type_ = animal.get("characteristics", {}).get("type")
+
+        # HTML-Block für das Tier
+        output += '<li class="cards__item">\n'
+        output += f'  <div class="card__title">{name}</div>\n'
+        output += '  <p class="card__text">\n'
+        if diet:
+            output += f'      <strong>Diet:</strong> {diet}<br/>\n'
+        if location_str:
+            output += f'      <strong>Location:</strong> {location_str}<br/>\n'
+        if type_:
+            output += f'      <strong>Type:</strong> {type_}<br/>\n'
+        output += '  </p>\n'
+        output += '</li>\n'
     return output
 
 def generate_html(template_path, output_path, animals_string):
@@ -39,6 +47,6 @@ def generate_html(template_path, output_path, animals_string):
 
 if __name__ == "__main__":
     data = load_data("animals_data.json")
-    animals_string = print_animals(data)
+    animals_string = build_animals_string(data)
     generate_html("animals_template.html", "animals.html", animals_string)
     print("animals_template.html wurde erstellt. Öffne die Datei im Browser, um das Ergebnis zu sehen.")
